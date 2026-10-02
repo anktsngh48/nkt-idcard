@@ -1,1 +1,470 @@
-asas
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f26b1d">
+<title>Deeksha Vedantu | Employee ID Card</title>
+<style>
+  :root {
+    color-scheme: light;
+    --accent: #f26b1d;
+    --accent-dark: #d94f00;
+    --accent-grad: linear-gradient(135deg, #f58220, #d94f00);
+    --bg: #fff1e3;
+    --card: #fffaf5;
+    --text: #2b1a10;
+    --muted: #7a5a45;
+    --border: #f1d3b8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(180deg, #ffdcbc 0%, #fff3e6 60%, #fff3e6 100%) fixed;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .wrap { width: 100%; max-width: 940px; }
+  h1 {
+    font-size: 30px; font-weight: 800; letter-spacing: .4px;
+    margin: 4px 0 4px; text-align: center;
+    background: linear-gradient(90deg, #f58220, #d94f00);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  .sub { text-align: center; color: var(--muted); margin: 0 0 20px; font-size: 14px; }
+  .layout { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 800px) {
+    .layout { grid-template-columns: 340px 1fr; align-items: start; }
+    .preview-card { position: sticky; top: 24px; }
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 30px rgba(217, 79, 0, .12);
+  }
+  .preview-card { text-align: center; }
+  .preview-box { width: 100%; max-width: 300px; margin: 0 auto 14px; }
+  #cv {
+    display: block; width: 100%; height: auto;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(120, 50, 0, .25);
+    background: #fff;
+  }
+  h2 { font-size: 17px; margin: 0 0 14px; color: var(--accent-dark); }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin: 14px 0 6px; }
+  label .opt { font-weight: 400; opacity: .8; }
+  input[type=text], input[type=tel] {
+    width: 100%; padding: 12px; font-size: 16px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: #fff; color: var(--text);
+  }
+  input[type=text]:focus, input[type=tel]:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+  .row2 { display: grid; grid-template-columns: 1fr; gap: 0 12px; }
+  @media (min-width: 520px) { .row2 { grid-template-columns: 1fr 1fr; } }
+  .photo-row { display: flex; align-items: center; gap: 14px; margin-top: 4px; }
+  #photo-preview {
+    width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+    border: 3px solid var(--accent); background: #ffe3c8; flex: none;
+  }
+  .btn {
+    display: inline-block; border: none; border-radius: 12px;
+    padding: 13px 18px; font-size: 16px; font-weight: 700; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn.primary { background: var(--accent-grad); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.05); }
+  .btn.secondary { background: #ffe3c8; color: #a8431a; border: 1px solid var(--border); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+  .btn.block { width: 100%; }
+  .actions { display: grid; gap: 10px; margin-top: 4px; }
+  .actions.two { grid-template-columns: 1fr 1fr; }
+  .note { font-size: 12px; color: var(--muted); margin: 10px 0 0; text-align: center; min-height: 16px; }
+  .hint { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+  .link { background: none; border: none; color: var(--accent-dark); text-decoration: underline; cursor: pointer; font-size: 13px; padding: 0; font-family: inherit; }
+  #print-area { display: none; }
+  @media print {
+    @page { size: A4; margin: 12mm; }
+    body { background: #fff; display: block; padding: 0; min-height: 0; }
+    .wrap { display: none !important; }
+    #print-area { display: block; }
+    #print-img { width: 54mm; height: 85.6mm; display: block; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Deeksha Vedantu</h1>
+  <p class="sub">Create your employee ID card</p>
+
+  <div class="layout">
+    <div class="card preview-card">
+      <div class="preview-box"><canvas id="cv" width="1080" height="1712"></canvas></div>
+      <div class="actions">
+        <button class="btn primary block" id="btn-download" disabled>Download ID card</button>
+        <div class="actions two">
+          <button class="btn secondary" id="btn-print" disabled>Print</button>
+          <button class="btn secondary" id="btn-share" hidden>Share</button>
+        </div>
+      </div>
+      <p class="note" id="saved-note"></p>
+    </div>
+
+    <div class="card">
+      <h2>Your details</h2>
+
+      <label for="f-name">Full name</label>
+      <input type="text" id="f-name" maxlength="60" autocomplete="name" placeholder="e.g. Kalash Sharma">
+
+      <label for="f-title">Designation</label>
+      <input type="text" id="f-title" maxlength="50" placeholder="e.g. Physics Faculty">
+
+      <label for="f-empid">Employee ID</label>
+      <input type="text" id="f-empid" maxlength="20" placeholder="e.g. DV-1024">
+
+      <div class="row2">
+        <div>
+          <label for="f-dept">Department <span class="opt">(optional)</span></label>
+          <input type="text" id="f-dept" maxlength="40" placeholder="e.g. Academics">
+        </div>
+        <div>
+          <label for="f-campus">Campus <span class="opt">(optional)</span></label>
+          <input type="text" id="f-campus" maxlength="50" placeholder="e.g. Main Campus">
+        </div>
+      </div>
+
+      <label for="f-phone">Phone <span class="opt">(optional)</span></label>
+      <input type="tel" id="f-phone" maxlength="20" autocomplete="tel" placeholder="e.g. +91 98765 43210">
+
+      <label for="photo-input">Your photo</label>
+      <div class="photo-row">
+        <img id="photo-preview" alt="" hidden>
+        <input type="file" id="photo-input" accept="image/*">
+      </div>
+      <p class="hint">Use a clear, front-facing photo with your face in the centre. It is cropped to a circle.</p>
+
+      <p class="hint" style="margin-top:16px">Your details are saved on this device only, so you won't need to type them again.
+        <button class="link" id="btn-clear" type="button">Clear saved details</button></p>
+    </div>
+  </div>
+</div>
+
+<div id="print-area"><img id="print-img" alt="Employee ID card"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY = 'dv-employee-id-v1';
+const FIELDS = ['name', 'title', 'empid', 'dept', 'campus', 'phone'];
+const FONT = '"Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+const W = 1080, H = 1712;           // 54 x 85.6 mm card ratio
+let photoData = null, photoImg = null, saveTimer = null;
+
+/* ---------- storage ---------- */
+function loadProfile() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { return null; }
+}
+function current() {
+  const o = {};
+  FIELDS.forEach(f => o[f] = $('f-' + f).value.trim());
+  o.photo = photoData;
+  return o;
+}
+function saveProfile() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(current()));
+    $('saved-note').textContent = 'Details saved on this device';
+  } catch (e) {
+    $('saved-note').textContent = 'Could not save on this device (storage may be blocked)';
+  }
+}
+function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveProfile, 400); }
+
+/* ---------- photo ---------- */
+function fileToSquareDataUrl(file, size) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const w = img.naturalWidth, h = img.naturalHeight, s = Math.min(w, h);
+      const sx = (w - s) / 2;
+      const sy = (h - s) * (h > w ? 0.2 : 0.5);   // portrait photos: keep the face, trim from the bottom
+      const c = document.createElement('canvas');
+      c.width = c.height = size;
+      c.getContext('2d').drawImage(img, sx, sy, s, s, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', 0.9));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('This photo could not be read. Please pick a JPG or PNG image.'));
+    };
+    img.src = url;
+  });
+}
+function setPhoto(dataUrl) {
+  photoData = dataUrl;
+  if (!dataUrl) { photoImg = null; $('photo-preview').hidden = true; render(); return; }
+  const img = new Image();
+  img.onload = () => { photoImg = img; render(); };
+  img.src = dataUrl;
+  $('photo-preview').src = dataUrl;
+  $('photo-preview').hidden = false;
+}
+
+/* ---------- drawing helpers ---------- */
+function roundRect(c, x, y, w, h, r) {
+  c.beginPath();
+  c.moveTo(x + r, y);
+  c.arcTo(x + w, y, x + w, y + h, r);
+  c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r);
+  c.arcTo(x, y, x + w, y, r);
+  c.closePath();
+}
+function setSpacing(c, px) { if ('letterSpacing' in c) c.letterSpacing = px + 'px'; }
+function fitSize(c, text, weight, start, min, maxW) {
+  let s = start;
+  while (s > min) {
+    c.font = weight + ' ' + s + 'px ' + FONT;
+    if (c.measureText(text).width <= maxW) return s;
+    s -= 2;
+  }
+  return min;
+}
+function wrapLines(c, text, maxW) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines = [];
+  let cur = '';
+  for (const w of words) {
+    const t = cur ? cur + ' ' + w : w;
+    if (c.measureText(t).width <= maxW || !cur) cur = t; else { lines.push(cur); cur = w; }
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+/* ---------- the card ---------- */
+function drawCard(c, d, img) {
+  c.clearRect(0, 0, W, H);
+  c.save();
+  roundRect(c, 0, 0, W, H, 64);
+  c.clip();
+
+  // background
+  const bg = c.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#fff3e6');
+  bg.addColorStop(1, '#ffdcbc');
+  c.fillStyle = bg;
+  c.fillRect(0, 0, W, H);
+
+  // header with curved bottom edge
+  const hg = c.createLinearGradient(0, 0, W, 520);
+  hg.addColorStop(0, '#f58220');
+  hg.addColorStop(1, '#d94f00');
+  c.fillStyle = hg;
+  c.beginPath();
+  c.moveTo(0, 0); c.lineTo(W, 0); c.lineTo(W, 430);
+  c.quadraticCurveTo(W / 2, 560, 0, 430);
+  c.closePath();
+  c.fill();
+
+  // soft decorative circles
+  c.save();
+  c.clip();
+  c.fillStyle = 'rgba(255,255,255,0.10)';
+  c.beginPath(); c.arc(960, 70, 200, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.arc(90, 400, 150, 0, Math.PI * 2); c.fill();
+  c.restore();
+
+  // lanyard slot
+  c.fillStyle = '#fff3e6';
+  roundRect(c, W / 2 - 80, 48, 160, 28, 14); c.fill();
+  c.strokeStyle = 'rgba(120,50,0,0.35)'; c.lineWidth = 3; c.stroke();
+
+  // wordmark
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillStyle = '#ffffff';
+  c.font = '800 68px ' + FONT;
+  setSpacing(c, 1);
+  c.fillText('Deeksha Vedantu', W / 2, 155);
+  c.font = '600 28px ' + FONT;
+  setSpacing(c, 8);
+  c.fillStyle = 'rgba(255,255,255,0.92)';
+  c.fillText('EMPLOYEE ID CARD', W / 2, 218);
+  setSpacing(c, 0);
+
+  // photo
+  const cx = W / 2, cy = 500, R = 232;
+  c.save();
+  c.shadowColor = 'rgba(120,50,0,0.30)'; c.shadowBlur = 34; c.shadowOffsetY = 12;
+  c.fillStyle = '#ffffff';
+  c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.fill();
+  c.restore();
+  c.fillStyle = '#f26b1d';
+  c.beginPath(); c.arc(cx, cy, R - 12, 0, Math.PI * 2); c.fill();
+  c.save();
+  c.beginPath(); c.arc(cx, cy, R - 26, 0, Math.PI * 2); c.clip();
+  if (img) {
+    c.drawImage(img, cx - (R - 26), cy - (R - 26), (R - 26) * 2, (R - 26) * 2);
+  } else {
+    c.fillStyle = '#ffe3c8';
+    c.fillRect(cx - R, cy - R, R * 2, R * 2);
+    c.fillStyle = '#f6c9a0';
+    c.beginPath(); c.arc(cx, cy - 40, 72, 0, Math.PI * 2); c.fill();
+    c.beginPath(); c.ellipse(cx, cy + 190, 150, 130, 0, 0, Math.PI * 2); c.fill();
+  }
+  c.restore();
+
+  // name
+  const maxW = W - 140;
+  const name = d.name || 'Your Name';
+  let size = fitSize(c, name, '800', 78, 52, maxW);
+  c.font = '800 ' + size + 'px ' + FONT;
+  let lines = [name];
+  if (c.measureText(name).width > maxW) {
+    size = 52; c.font = '800 52px ' + FONT;
+    lines = wrapLines(c, name, maxW);
+    if (lines.length > 2) { size = 44; c.font = '800 44px ' + FONT; lines = wrapLines(c, name, maxW).slice(0, 3); }
+  }
+  c.fillStyle = d.name ? '#3b1a08' : 'rgba(59,26,8,0.35)';
+  const lineH = size * 1.2, nameTop = 830;
+  lines.forEach((ln, i) => c.fillText(ln, W / 2, nameTop + i * lineH));
+  let y = nameTop + (lines.length - 1) * lineH + size / 2;
+
+  // designation
+  const title = d.title || 'Designation';
+  const ts = fitSize(c, title, '700', 42, 28, maxW);
+  c.font = '700 ' + ts + 'px ' + FONT;
+  c.fillStyle = d.title ? '#d94f00' : 'rgba(217,79,0,0.35)';
+  y += 52;
+  c.fillText(title, W / 2, y);
+
+  // divider
+  y += 50;
+  const dg = c.createLinearGradient(W / 2 - 80, 0, W / 2 + 80, 0);
+  dg.addColorStop(0, '#f58220'); dg.addColorStop(1, '#d94f00');
+  c.fillStyle = dg;
+  roundRect(c, W / 2 - 80, y - 4, 160, 8, 4); c.fill();
+
+  // detail rows
+  const rows = [['EMPLOYEE ID', d.empid || '\u2014']];
+  if (d.dept) rows.push(['DEPARTMENT', d.dept]);
+  if (d.campus) rows.push(['CAMPUS', d.campus]);
+  if (d.phone) rows.push(['PHONE', d.phone]);
+  const left = 110, vMax = W - 220;
+  let ry = y + 70;
+  c.textAlign = 'left';
+  rows.forEach((r, i) => {
+    if (i > 0) {
+      c.strokeStyle = 'rgba(217,79,0,0.18)'; c.lineWidth = 2;
+      c.beginPath(); c.moveTo(left, ry - 40); c.lineTo(W - left, ry - 40); c.stroke();
+    }
+    c.fillStyle = '#7a5a45';
+    c.font = '700 26px ' + FONT;
+    setSpacing(c, 3);
+    c.fillText(r[0], left, ry);
+    setSpacing(c, 0);
+    const vs = fitSize(c, r[1], '700', 40, 26, vMax);
+    c.font = '700 ' + vs + 'px ' + FONT;
+    c.fillStyle = '#2b1a10';
+    c.fillText(r[1], left, ry + 50);
+    ry += 120;
+  });
+
+  // footer bar
+  const fh = 124;
+  const fg = c.createLinearGradient(0, 0, W, 0);
+  fg.addColorStop(0, '#f58220'); fg.addColorStop(1, '#d94f00');
+  c.fillStyle = fg;
+  c.fillRect(0, H - fh, W, fh);
+  c.textAlign = 'center';
+  c.fillStyle = '#ffffff';
+  c.font = '600 30px ' + FONT;
+  c.fillText('If found, please return to Deeksha Vedantu', W / 2, H - fh / 2);
+
+  c.restore();
+}
+
+/* ---------- state + buttons ---------- */
+function isReady(d) { return !!(d.name && d.title && d.empid && photoImg); }
+
+function render() {
+  const d = current();
+  drawCard($('cv').getContext('2d'), d, photoImg);
+  const ok = isReady(d);
+  $('btn-download').disabled = !ok;
+  $('btn-print').disabled = !ok;
+  $('btn-share').disabled = !ok;
+}
+
+function fileName() {
+  const d = current();
+  const slug = s => s.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase();
+  const part = slug(d.name) || slug(d.empid) || 'employee';
+  return 'deeksha-vedantu-id-' + part + '.png';
+}
+function canvasBlob() { return new Promise(r => $('cv').toBlob(r, 'image/png')); }
+
+$('btn-download').addEventListener('click', async () => {
+  const blob = await canvasBlob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = fileName();
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+});
+
+$('btn-share').addEventListener('click', async () => {
+  const blob = await canvasBlob();
+  const file = new File([blob], fileName(), { type: 'image/png' });
+  try { await navigator.share({ files: [file], title: 'Deeksha Vedantu ID card' }); } catch (e) { /* cancelled */ }
+});
+
+$('btn-print').addEventListener('click', () => {
+  const img = $('print-img');
+  img.onload = () => window.print();
+  img.src = $('cv').toDataURL('image/png');
+});
+
+$('btn-clear').addEventListener('click', () => {
+  if (!confirm('Clear your saved details from this device?')) return;
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  FIELDS.forEach(f => $('f-' + f).value = '');
+  $('photo-input').value = '';
+  $('saved-note').textContent = 'Saved details cleared';
+  setPhoto(null);
+});
+
+FIELDS.forEach(f => $('f-' + f).addEventListener('input', () => { render(); scheduleSave(); }));
+
+$('photo-input').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    setPhoto(await fileToSquareDataUrl(file, 480));
+    scheduleSave();
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+/* ---------- start-up ---------- */
+(function init() {
+  $('btn-share').hidden = !(navigator.canShare && navigator.share);
+  const p = loadProfile();
+  if (p) {
+    FIELDS.forEach(f => { if (p[f]) $('f-' + f).value = p[f]; });
+    if (p.photo) { setPhoto(p.photo); return; }
+  }
+  render();
+})();
+</script>
+</body>
+</html>
